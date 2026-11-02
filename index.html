@@ -26,60 +26,67 @@
         #scope-sniper {
             position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
             pointer-events: none; z-index: 15; display: none;
-            background: radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.98) 31%, #000 100%);
+            background: radial-gradient(circle at center, transparent 28%, rgba(0,0,0,0.98) 29%, #000 100%);
         }
         #scope-sniper .reticle-h { position: absolute; top: 50%; left: 0; width: 100vw; height: 1.5px; background: rgba(0,0,0,0.85); transform: translateY(-50%); }
         #scope-sniper .reticle-v { position: absolute; top: 0; left: 50%; width: 1.5px; height: 100vh; background: rgba(0,0,0,0.85); transform: translateX(-50%); }
 
         #scope-reddot {
             position: absolute; top: 50%; left: 50%;
-            width: 140px; height: 140px; border: 3px solid rgba(30, 30, 30, 0.9);
+            width: 140px; height: 140px; border: 4px solid rgba(25, 25, 25, 0.95);
             border-radius: 50%; transform: translate(-50%, -50%);
             box-shadow: 0 0 15px rgba(0,0,0,0.8) inset;
             pointer-events: none; z-index: 15; display: none;
-            background: rgba(100, 200, 255, 0.08);
+            background: rgba(120, 220, 255, 0.08);
         }
         #scope-reddot::after {
             content: ''; position: absolute; top: 50%; left: 50%;
             width: 6px; height: 6px; background: #ff1100; border-radius: 50%;
-            transform: translate(-50%, -50%); box-shadow: 0 0 8px #ff0000;
+            transform: translate(-50%, -50%); box-shadow: 0 0 10px #ff0000;
         }
 
         #scope-ghostring {
             position: absolute; top: 50%; left: 50%;
-            width: 110px; height: 110px; border: 4px solid #111;
+            width: 120px; height: 120px; border: 5px solid #111;
             border-radius: 50%; transform: translate(-50%, -50%);
             pointer-events: none; z-index: 15; display: none;
         }
         #scope-ghostring::after {
             content: ''; position: absolute; bottom: 15px; left: 50%;
-            width: 4px; height: 35px; background: #ff8800; transform: translateX(-50%);
+            width: 4px; height: 40px; background: #ff8800; transform: translateX(-50%);
         }
 
         #scope-launcher {
             position: absolute; top: 50%; left: 50%;
-            width: 320px; height: 240px; border: 2px solid #00ff66;
+            width: 340px; height: 260px; border: 2px solid #00ff66;
             transform: translate(-50%, -50%); pointer-events: none; z-index: 15; display: none;
-            background: rgba(0, 255, 100, 0.05); box-shadow: 0 0 20px rgba(0,255,100,0.2) inset;
+            background: rgba(0, 255, 100, 0.05); box-shadow: 0 0 25px rgba(0,255,100,0.2) inset;
         }
         #scope-launcher .bracket {
-            position: absolute; top: 50%; left: 50%; width: 60px; height: 60px;
+            position: absolute; top: 50%; left: 50%; width: 70px; height: 70px;
             border: 2px dashed #00ff66; transform: translate(-50%, -50%);
         }
 
-        /* HUD & Loadout Selection */
+        /* HUD & Ammo Bar */
         #hud {
             position: absolute; bottom: 25px; right: 35px; color: #fff;
             z-index: 10; text-align: right; text-shadow: 2px 2px 5px #000;
         }
         #weapon-name { font-size: 34px; font-weight: 900; color: #ffcc00; margin: 0; }
-        #weapon-slot { font-size: 16px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+        #weapon-slot { font-size: 15px; color: #bbb; text-transform: uppercase; letter-spacing: 1px; }
+        #ammo-text { font-size: 28px; font-weight: 800; color: #fff; margin-top: 4px; }
+        #ammo-bar-container {
+            width: 180px; height: 8px; background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #555; border-radius: 4px; margin-top: 6px; float: right; overflow: hidden;
+        }
+        #ammo-bar { width: 100%; height: 100%; background: #ffcc00; transition: width 0.1s; }
+        #reload-msg { font-size: 14px; color: #ff4444; font-weight: bold; display: none; }
 
         #critical-popup {
             position: absolute; top: 38%; left: 50%;
             transform: translate(-50%, -50%); color: #ff1111;
-            font-size: 48px; font-weight: 900; display: none;
-            text-shadow: 0 0 15px rgba(255, 0, 0, 0.9), 3px 3px #000;
+            font-size: 50px; font-weight: 900; display: none;
+            text-shadow: 0 0 18px rgba(255, 0, 0, 0.9), 3px 3px #000;
             pointer-events: none; z-index: 20; letter-spacing: 2px;
         }
 
@@ -87,7 +94,7 @@
             position: absolute; top: 20px; left: 20px; color: white;
             z-index: 10; background: rgba(15, 17, 20, 0.88); padding: 18px;
             border-radius: 10px; border: 1px solid #333; backdrop-filter: blur(6px);
-            width: 290px;
+            width: 300px;
         }
         button { background: #ffcc00; border: none; padding: 7px 14px; font-weight: bold; border-radius: 5px; cursor: pointer; color: #111; }
         button:hover { background: #ffe066; }
@@ -123,7 +130,10 @@
     <div id="hud">
         <div id="weapon-slot">Primary Weapon</div>
         <div id="weapon-name">AK-47</div>
-        <div style="font-size: 14px; color: #888; margin-top: 4px;">Press [1] or [2] to switch</div>
+        <div id="ammo-text"><span id="cur-ammo">30</span> / <span id="max-ammo">30</span></div>
+        <div id="ammo-bar-container"><div id="ammo-bar"></div></div><br>
+        <div id="reload-msg">RELOADING... [R]</div>
+        <div style="font-size: 13px; color: #888; margin-top: 10px;">[1] Primary | [2] Secondary | [R] Reload</div>
     </div>
 
     <!-- Menu Panel -->
@@ -137,8 +147,8 @@
         <p id="status" style="color: #ffcc00; font-size: 13px; margin: 12px 0 6px 0;">Click anywhere to start.</p>
         <small style="color: #777; line-height: 1.4; display: block;">
             <b>W, A, S, D</b>: Walk | <b>SHIFT</b>: Sprint | <b>SPACE</b>: Jump<br>
-            <b>Right-Click</b>: Aim (ADS + Reduced Spread)<br>
-            <b>Left-Click</b>: Fire | <b>1, 2</b>: Primary / Secondary
+            <b>Hold Left-Click</b>: Automatic Fire | <b>R</b>: Reload<br>
+            <b>Right-Click</b>: Aim (ADS + Reduced Recoil)
         </small>
     </div>
 
@@ -181,11 +191,11 @@
                 const gain = audioCtx.createGain();
                 osc.type = 'sawtooth';
                 osc.frequency.setValueAtTime(140, now);
-                osc.frequency.linearRampToValueAtTime(40, now + 0.4);
-                gain.gain.setValueAtTime(0.4, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc.frequency.linearRampToValueAtTime(30, now + 0.45);
+                gain.gain.setValueAtTime(0.5, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
                 osc.connect(gain); gain.connect(audioCtx.destination);
-                osc.start(now); osc.stop(now + 0.4);
+                osc.start(now); osc.stop(now + 0.45);
                 return;
             }
 
@@ -198,9 +208,9 @@
             noise.buffer = buffer;
             const gain = audioCtx.createGain();
 
-            let vol = type === 'sniper' ? 0.7 : (type === 'shotgun' ? 0.6 : 0.3);
+            let vol = type === 'sniper' ? 0.75 : (type === 'shotgun' ? 0.65 : 0.3);
             gain.gain.setValueAtTime(vol, now);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + (type === 'sniper' ? 0.25 : 0.12));
+            gain.gain.exponentialRampToValueAtTime(0.01, now + (type === 'sniper' ? 0.28 : 0.1));
 
             noise.connect(gain); gain.connect(audioCtx.destination);
             noise.start(now);
@@ -212,19 +222,19 @@
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.type = 'triangle';
-            osc.frequency.setValueAtTime(100, now);
-            osc.frequency.exponentialRampToValueAtTime(20, now + 0.8);
+            osc.frequency.setValueAtTime(120, now);
+            osc.frequency.exponentialRampToValueAtTime(18, now + 0.9);
             gain.gain.setValueAtTime(1.0, now);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.9);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.95);
             osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.start(now); osc.stop(now + 0.9);
+            osc.start(now); osc.stop(now + 0.95);
         }
 
         function playHitSound(isCrit) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            osc.frequency.setValueAtTime(isCrit ? 900 : 450, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(isCrit ? 920 : 460, audioCtx.currentTime);
             gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
             osc.connect(gain); gain.connect(audioCtx.destination);
@@ -233,22 +243,22 @@
 
         // --- 2. WEAPON DEFINITIONS & STATS ---
         const WEAPONS = [
-            { name: "AK-47", rate: 110, speed: 220, spread: 0.022, recoil: 0.08, zoom: 55, scope: 'iron', sound: 'rifle' },
-            { name: "Glock 17", rate: 180, speed: 170, spread: 0.014, recoil: 0.04, zoom: 60, scope: 'iron', sound: 'pistol' },
-            { name: "Micro Uzi", rate: 60, speed: 160, spread: 0.038, recoil: 0.045, zoom: 58, scope: 'reddot', sound: 'uzi' },
-            { name: "MP40", rate: 125, speed: 180, spread: 0.018, recoil: 0.04, zoom: 55, scope: 'iron', sound: 'smg' },
-            { name: "SPAS-12", rate: 550, speed: 150, spread: 0.065, recoil: 0.16, zoom: 60, scope: 'ghostring', sound: 'shotgun', pellets: 8 },
-            { name: "CheyTac M200", rate: 850, speed: 450, spread: 0.0005, recoil: 0.32, zoom: 12, scope: 'sniper', sound: 'sniper' },
-            { name: "Rocket Launcher", rate: 1000, speed: 60, spread: 0.003, recoil: 0.35, zoom: 50, scope: 'launcher', sound: 'rocket_fire', isRocket: true }
+            { name: "AK-47", rate: 105, speed: 220, spread: 0.022, recoil: 0.08, zoom: 55, scope: 'iron', sound: 'rifle', mag: 30, curAmmo: 30, reloadTime: 2.2, auto: true },
+            { name: "Glock 17", rate: 160, speed: 170, spread: 0.014, recoil: 0.04, zoom: 60, scope: 'iron', sound: 'pistol', mag: 17, curAmmo: 17, reloadTime: 1.5, auto: false },
+            { name: "Micro Uzi", rate: 55, speed: 160, spread: 0.038, recoil: 0.045, zoom: 58, scope: 'reddot', sound: 'uzi', mag: 32, curAmmo: 32, reloadTime: 1.8, auto: true },
+            { name: "MP40", rate: 120, speed: 180, spread: 0.018, recoil: 0.04, zoom: 55, scope: 'iron', sound: 'smg', mag: 32, curAmmo: 32, reloadTime: 2.0, auto: true },
+            { name: "SPAS-12", rate: 550, speed: 150, spread: 0.065, recoil: 0.16, zoom: 60, scope: 'ghostring', sound: 'shotgun', mag: 8, curAmmo: 8, reloadTime: 2.8, pellets: 8, auto: false },
+            { name: "CheyTac M200", rate: 900, speed: 450, spread: 0.0004, recoil: 0.32, zoom: 12, scope: 'sniper', sound: 'sniper', mag: 7, curAmmo: 7, reloadTime: 3.2, auto: false },
+            { name: "Rocket Launcher", rate: 1100, speed: 60, spread: 0.002, recoil: 0.35, zoom: 50, scope: 'launcher', sound: 'rocket_fire', mag: 1, curAmmo: 1, reloadTime: 3.5, isRocket: true, auto: false }
         ];
 
         let equippedSlots = [0, 1]; // Default: AK-47 & Glock
         let activeSlot = 0; // 0 = Primary, 1 = Secondary
+        let isReloading = false;
 
-        // --- 3. SCENE, CAMERA & LIGHTING ---
+        // --- 3. SCENE, CAMERA, LIGHTING & REALISTIC SKY DOME ---
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0xa3c5e8);
-        scene.fog = new THREE.Fog(0xa3c5e8, 30, 140);
+        scene.fog = new THREE.Fog(0xb4d0e8, 30, 160);
 
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -264,254 +274,330 @@
             }
         });
 
-        const sun = new THREE.DirectionalLight(0xffffff, 1.3);
-        sun.position.set(45, 60, 25);
+        // Realistic Procedural Sky
+        const skyGeo = new THREE.SphereGeometry(300, 32, 15);
+        const skyMat = new THREE.ShaderMaterial({
+            uniforms: {
+                topColor: { value: new THREE.Color(0x1a5ca8) }, // Deep sky blue
+                bottomColor: { value: new THREE.Color(0xdce8f5) }, // Horizon atmospheric haze
+                offset: { value: 10 },
+                exponent: { value: 0.6 }
+            },
+            vertexShader: `
+                varying vec3 vWorldPosition;
+                void main() {
+                    vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+                    vWorldPosition = worldPosition.xyz;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform vec3 topColor;
+                uniform vec3 bottomColor;
+                uniform float offset;
+                uniform float exponent;
+                varying vec3 vWorldPosition;
+                void main() {
+                    float h = normalize(vWorldPosition + offset).y;
+                    gl_FragColor = vec4(mix(bottomColor, topColor, max(pow(max(h, 0.0), exponent), 0.0)), 1.0);
+                }
+            `,
+            side: THREE.BackSide
+        });
+        const sky = new THREE.Mesh(skyGeo, skyMat);
+        scene.add(sky);
+
+        // Sun & Ambient Lighting
+        const sun = new THREE.DirectionalLight(0xfff6e5, 1.35);
+        sun.position.set(50, 75, 30);
         sun.castShadow = true;
         sun.shadow.mapSize.width = 2048; sun.shadow.mapSize.height = 2048;
         scene.add(sun);
-        scene.add(new THREE.AmbientLight(0x708090, 0.8));
+        scene.add(new THREE.AmbientLight(0x8da2b5, 0.85));
 
-        // --- 4. DEADSHOT ARENA ENVIRONMENT ---
-        // Clean Arena Floor
-        const floorMat = new THREE.MeshLambertMaterial({ color: 0x3e444c });
-        const floor = new THREE.Mesh(new THREE.PlaneGeometry(240, 240), floorMat);
+        // --- 4. MAP COLLISION & ENVIRONMENT (Deadshot Arena) ---
+        // Arena Floor
+        const floorMat = new THREE.MeshLambertMaterial({ color: 0x3d434a });
+        const floor = new THREE.Mesh(new THREE.PlaneGeometry(260, 260), floorMat);
         floor.rotation.x = -Math.PI / 2;
         floor.receiveShadow = true;
         scene.add(floor);
 
-        // Map Obstacles & Structures
-        const obstacles = [];
-        function createBox(x, y, z, w, h, d, color) {
+        // Solid Obstacle System with Bounding Boxes
+        const colliders = [];
+        function createSolidBox(x, y, z, w, h, d, color) {
             const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshLambertMaterial({ color }));
             mesh.position.set(x, y + h/2, z);
             mesh.castShadow = true;
             mesh.receiveShadow = true;
             scene.add(mesh);
-            obstacles.push(mesh);
+            mesh.geometry.computeBoundingBox();
+            
+            // Store physical bounding box for collision detection
+            colliders.push({
+                minX: x - w/2, maxX: x + w/2,
+                minZ: z - d/2, maxZ: z + d/2,
+                minY: y, maxY: y + h,
+                mesh: mesh
+            });
             return mesh;
         }
 
-        // Two-Story Sniper Platform & Ramp
-        createBox(0, 0, -32, 16, 5, 10, 0x47525d); // Bunker base
-        createBox(0, 5, -34, 16, 1.2, 1, 0x222222); // Railing
-        createBox(-12, 0, -22, 6, 2.5, 12, 0x824b35); // Wooden ramp / catwalk
+        // Two-Story Platform & Buildings
+        createSolidBox(0, 0, -32, 16, 5, 10, 0x47525d);
+        createSolidBox(-12, 0, -22, 6, 2.5, 12, 0x824b35); // Ramp
 
-        // Colored Containers (Deadshot signature style)
-        createBox(-10, 0, -12, 3.5, 3.5, 7, 0xd03d33); // Red Container
-        createBox(12, 0, -18, 3.5, 3.5, 7, 0x2b72b8);  // Blue Container
-        createBox(12, 3.5, -18, 3.5, 3.5, 7, 0xcca01a); // Yellow Container on top
-        createBox(0, 0, -10, 4, 1.4, 1.2, 0x2e353d); // Mid barricade
+        // Shipping Containers (Deadshot aesthetic)
+        createSolidBox(-10, 0, -12, 3.5, 3.5, 7, 0xd03d33); // Red Container
+        createSolidBox(12, 0, -18, 3.5, 3.5, 7, 0x2b72b8);  // Blue Container
+        createSolidBox(12, 3.5, -18, 3.5, 3.5, 7, 0xcca01a); // Stacked Yellow Container
+        createSolidBox(0, 0, -10, 4, 1.4, 1.2, 0x2e353d);   // Center barricade
 
-        // Boundary Arena Walls
-        createBox(0, 0, -70, 160, 12, 4, 0x2d3238);
-        createBox(-80, 0, 0, 4, 12, 160, 0x2d3238);
-        createBox(80, 0, 0, 4, 12, 160, 0x2d3238);
-        createBox(0, 0, 70, 160, 12, 4, 0x2d3238);
+        // Boundary Arena Walls (Cannot fall off or walk through)
+        createSolidBox(0, 0, -80, 180, 14, 4, 0x252a30);
+        createSolidBox(-90, 0, 0, 4, 14, 180, 0x252a30);
+        createSolidBox(90, 0, 0, 4, 14, 180, 0x252a30);
+        createSolidBox(0, 0, 80, 180, 14, 4, 0x252a30);
 
-        // Practice Target Dummies (Concentric Silhouette from Image 2)
+        // Silhouette Target Dummies (Image 2)
         const targets = [];
-        function spawnSilhouetteTarget(x, y, z) {
+        function spawnTarget(x, y, z) {
             const group = new THREE.Group();
-
-            // Head (Critical hit spot)
-            const head = new THREE.Mesh(
-                new THREE.SphereGeometry(0.3, 16, 16),
-                new THREE.MeshBasicMaterial({ color: 0xd9383a })
-            );
-            head.position.y = 1.85;
-            head.userData = { isHead: true, parentGroup: group };
+            
+            // Head (Sphere)
+            const head = new THREE.Mesh(new THREE.SphereGeometry(0.3, 16, 16), new THREE.MeshBasicMaterial({ color: 0xd9383a }));
+            head.position.y = 1.85; head.userData = { isHead: true };
             group.add(head);
 
-            // Torso (Dark silhouette body)
-            const body = new THREE.Mesh(
-                new THREE.BoxGeometry(0.7, 1.1, 0.15),
-                new THREE.MeshLambertMaterial({ color: 0x1b1f24 })
-            );
-            body.position.y = 1.05;
-            body.userData = { isHead: false, parentGroup: group };
+            // Torso
+            const body = new THREE.Mesh(new THREE.BoxGeometry(0.7, 1.1, 0.15), new THREE.MeshLambertMaterial({ color: 0x1b1f24 }));
+            body.position.y = 1.05; body.userData = { isHead: false };
             group.add(body);
 
-            // Red Center "X" Bullseye
-            const bullseye = new THREE.Mesh(
-                new THREE.BoxGeometry(0.35, 0.45, 0.17),
-                new THREE.MeshBasicMaterial({ color: 0xd9383a })
-            );
-            bullseye.position.set(0, 1.05, 0.01);
-            bullseye.userData = { isHead: false, parentGroup: group };
+            // Red X Bullseye
+            const bullseye = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.45, 0.17), new THREE.MeshBasicMaterial({ color: 0xd9383a }));
+            bullseye.position.set(0, 1.05, 0.01); bullseye.userData = { isHead: false };
             group.add(bullseye);
 
-            // Stand Pole
+            // Pole
             const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.6), new THREE.MeshBasicMaterial({ color: 0x555555 }));
-            pole.position.y = 0.3;
-            group.add(pole);
+            pole.position.y = 0.3; group.add(pole);
 
             group.position.set(x, y, z);
             scene.add(group);
             targets.push(head, body, bullseye);
         }
-        spawnSilhouetteTarget(0, 0, -18);
-        spawnSilhouetteTarget(-8, 0, -28);
-        spawnSilhouetteTarget(8, 0, -28);
-        spawnSilhouetteTarget(0, 5, -34); // High vantage rooftop sniper dummy
-        spawnSilhouetteTarget(15, 0, -45);
+        spawnTarget(0, 0, -18);
+        spawnTarget(-8, 0, -28);
+        spawnTarget(8, 0, -28);
+        spawnTarget(0, 5, -34); // Sniper dummy on top of platform
+        spawnTarget(15, 0, -45);
 
-        // --- 5. DETAILED PROCEDURAL 3D GUN MODELS ---
+        // --- 5. DETAILED 3D WEAPON MODELS (Matching Photos Exactly) ---
         const gunContainer = new THREE.Group();
         camera.add(gunContainer);
         scene.add(camera);
 
         const gunModels = [];
-        const matBlack = new THREE.MeshLambertMaterial({ color: 0x1a1a1a });
-        const matDarkSteel = new THREE.MeshLambertMaterial({ color: 0x2e3236 });
-        const matWood = new THREE.MeshLambertMaterial({ color: 0x733f1f });
-        const matOlive = new THREE.MeshLambertMaterial({ color: 0x4a5d3f });
+        const matBlack = new THREE.MeshLambertMaterial({ color: 0x141414 });
+        const matDarkSteel = new THREE.MeshLambertMaterial({ color: 0x2a2e33 });
+        const matWood = new THREE.MeshLambertMaterial({ color: 0x6e3b1c }); // Classic AK cherry wood
+        const matOlive = new THREE.MeshLambertMaterial({ color: 0x3d4f36 }); // Stinger military green
 
-        // 0: AK-47 (Wood stock/handguard, steel banana mag)
+        // 0: AK-47 (Classic Wooden Stock, Curved Steel Magazine, Gas Tube)
         const ak = new THREE.Group();
-        ak.add(new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.11, 0.5), matDarkSteel)); // Receiver
-        const akStock = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.12, 0.32), matWood);
-        akStock.position.set(0, -0.04, 0.36); ak.add(akStock);
-        const akHandguard = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.09, 0.24), matWood);
-        akHandguard.position.set(0, 0.01, -0.32); ak.add(akHandguard);
-        const akBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.35), matDarkSteel);
-        akBarrel.rotation.x = Math.PI/2; akBarrel.position.set(0, 0.03, -0.58); ak.add(akBarrel);
-        const akMag = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.24, 0.11), matDarkSteel);
-        akMag.position.set(0, -0.15, -0.06); akMag.rotation.x = 0.3; ak.add(akMag);
+        ak.add(new THREE.Mesh(new THREE.BoxGeometry(0.068, 0.11, 0.48), matDarkSteel)); // Receiver
+        const akStock = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.13, 0.35), matWood); // Wooden Stock
+        akStock.position.set(0, -0.04, 0.38); akStock.rotation.x = -0.05; ak.add(akStock);
+        const akLowerWood = new THREE.Mesh(new THREE.BoxGeometry(0.072, 0.08, 0.26), matWood); // Wood Handguard
+        akLowerWood.position.set(0, 0.01, -0.32); ak.add(akLowerWood);
+        const akGasTube = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.32), matDarkSteel);
+        akGasTube.rotation.x = Math.PI/2; akGasTube.position.set(0, 0.065, -0.34); ak.add(akGasTube);
+        const akBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.45), matDarkSteel);
+        akBarrel.rotation.x = Math.PI/2; akBarrel.position.set(0, 0.03, -0.62); ak.add(akBarrel);
+        const akFrontSight = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.06, 0.03), matDarkSteel);
+        akFrontSight.position.set(0, 0.07, -0.78); ak.add(akFrontSight);
+        const akMag = new THREE.Mesh(new THREE.BoxGeometry(0.048, 0.26, 0.11), matDarkSteel); // Curved banana mag
+        akMag.position.set(0, -0.16, -0.06); akMag.rotation.x = 0.35; ak.add(akMag);
+        const akGrip = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.16, 0.07), matWood);
+        akGrip.position.set(0, -0.12, 0.16); akGrip.rotation.x = -0.35; ak.add(akGrip);
         gunModels.push(ak);
 
-        // 1: Glock 17 (Black slide, polymer grip)
+        // 1: Glock 17 (Squared Slide, Polymer Frame, Combat Trigger Guard)
         const glock = new THREE.Group();
-        glock.add(new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.07, 0.3), matBlack)); // Slide
-        const glockGrip = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.18, 0.09), matDarkSteel);
-        glockGrip.position.set(0, -0.1, 0.06); glockGrip.rotation.x = -0.25; glock.add(glockGrip);
+        glock.add(new THREE.Mesh(new THREE.BoxGeometry(0.058, 0.068, 0.32), matBlack)); // Slide
+        const glockFrame = new THREE.Mesh(new THREE.BoxGeometry(0.054, 0.05, 0.28), matDarkSteel);
+        glockFrame.position.set(0, -0.04, 0.02); glock.add(glockFrame);
+        const glockGrip = new THREE.Mesh(new THREE.BoxGeometry(0.052, 0.18, 0.09), matDarkSteel);
+        glockGrip.position.set(0, -0.12, 0.08); glockGrip.rotation.x = -0.26; glock.add(glockGrip);
+        const glockTriggerGuard = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.08, 0.1), matBlack);
+        glockTriggerGuard.position.set(0, -0.08, -0.03); glock.add(glockTriggerGuard);
         gunModels.push(glock);
 
-        // 2: Micro Uzi (Boxy body, top rail, grip mag)
+        // 2: Micro Uzi (Top Picatinny Rail, Underbarrel Rail, Grip Mag)
         const uzi = new THREE.Group();
-        uzi.add(new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.12, 0.34), matBlack));
-        const uziGrip = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.22, 0.08), matDarkSteel);
-        uziGrip.position.set(0, -0.14, 0.02); uzi.add(uziGrip);
-        const uziBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.1), matDarkSteel);
-        uziBarrel.rotation.x = Math.PI/2; uziBarrel.position.set(0, -0.01, -0.22); uzi.add(uziBarrel);
+        uzi.add(new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.12, 0.36), matBlack)); // Receiver
+        const uziTopRail = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.025, 0.26), matDarkSteel); // Picatinny Top Rail
+        uziTopRail.position.set(0, 0.07, 0); uzi.add(uziTopRail);
+        const uziBottomRail = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.02, 0.12), matDarkSteel); // Underbarrel Rail
+        uziBottomRail.position.set(0, -0.065, -0.12); uzi.add(uziBottomRail);
+        const uziGrip = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.22, 0.085), matBlack); // Grip
+        uziGrip.position.set(0, -0.15, 0.02); uzi.add(uziGrip);
+        const uziMag = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.15, 0.06), matDarkSteel); // Mag protruding
+        uziMag.position.set(0, -0.26, 0.02); uzi.add(uziMag);
+        const uziMuzzle = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.1, 12), matDarkSteel);
+        uziMuzzle.rotation.x = Math.PI/2; uziMuzzle.position.set(0, 0, -0.22); uzi.add(uziMuzzle);
         gunModels.push(uzi);
 
-        // 3: MP40 (Slim tube receiver, long vertical mag)
+        // 3: MP40 (Cylindrical Ribbed Receiver, Slim Vertical Mag, Folding Wire Stock)
         const mp40 = new THREE.Group();
-        const mpBody = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.5), matDarkSteel);
-        mpBody.rotation.x = Math.PI/2; mp40.add(mpBody);
-        const mpMag = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.28, 0.06), matBlack);
-        mpMag.position.set(0, -0.16, -0.12); mp40.add(mpMag);
-        const mpGrip = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.16, 0.07), matBlack);
-        mpGrip.position.set(0, -0.1, 0.18); mpGrip.rotation.x = -0.3; mp40.add(mpGrip);
+        const mpTube = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.52), matDarkSteel);
+        mpTube.rotation.x = Math.PI/2; mp40.add(mpTube);
+        const mpBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.35), matDarkSteel);
+        mpBarrel.rotation.x = Math.PI/2; mpBarrel.position.set(0, 0, -0.38); mp40.add(mpBarrel);
+        const mpMag = new THREE.Mesh(new THREE.BoxGeometry(0.038, 0.3, 0.055), matBlack); // Slim vertical mag
+        mpMag.position.set(0, -0.18, -0.12); mp40.add(mpMag);
+        const mpStockWire = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.04, 0.38), matDarkSteel); // Wire stock
+        mpStockWire.position.set(0, -0.04, 0.35); mp40.add(mpStockWire);
+        const mpGrip = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.16, 0.07), matBlack);
+        mpGrip.position.set(0, -0.1, 0.18); mpGrip.rotation.x = -0.32; mp40.add(mpGrip);
         gunModels.push(mp40);
 
-        // 4: SPAS-12 (Ribbed heat shield, combat pump)
+        // 4: SPAS-12 (Ribbed Pump Forend, Dual Barrel Tubes, Combat Grip)
         const spas = new THREE.Group();
-        spas.add(new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.12, 0.45), matBlack));
-        const spasPump = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.25, 12), matDarkSteel);
-        spasPump.rotation.x = Math.PI/2; spasPump.position.set(0, -0.04, -0.28); spas.add(spasPump);
-        const spasBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.5), matDarkSteel);
-        spasBarrel.rotation.x = Math.PI/2; spasBarrel.position.set(0, 0.02, -0.45); spas.add(spasBarrel);
-        const spasGrip = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.17, 0.08), matBlack);
-        spasGrip.position.set(0, -0.12, 0.18); spasGrip.rotation.x = -0.35; spas.add(spasGrip);
+        spas.add(new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.12, 0.48), matBlack));
+        const spasPump = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.28, 16), matDarkSteel); // Ribbed Pump
+        spasPump.rotation.x = Math.PI/2; spasPump.position.set(0, -0.04, -0.3); spas.add(spasPump);
+        const spasUpperBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.55), matDarkSteel);
+        spasUpperBarrel.rotation.x = Math.PI/2; spasUpperBarrel.position.set(0, 0.03, -0.5); spas.add(spasUpperBarrel);
+        const spasMagTube = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.5), matBlack);
+        spasMagTube.rotation.x = Math.PI/2; spasMagTube.position.set(0, -0.025, -0.48); spas.add(spasMagTube);
+        const spasGrip = new THREE.Mesh(new THREE.BoxGeometry(0.058, 0.18, 0.085), matBlack);
+        spasGrip.position.set(0, -0.13, 0.2); spasGrip.rotation.x = -0.35; spas.add(spasGrip);
         gunModels.push(spas);
 
-        // 5: CheyTac M200 Sniper (Long fluted barrel, bipod, carry handle, large scope)
+        // 5: CheyTac M200 Intervention (Carry Handle with Cutouts, Fluted Barrel, Bipod, Sniper Scope)
         const sniper = new THREE.Group();
-        sniper.add(new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.12, 0.6), matBlack));
-        const snpBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.028, 0.9), matDarkSteel);
-        snpBarrel.rotation.x = Math.PI/2; snpBarrel.position.set(0, 0.02, -0.72); sniper.add(snpBarrel);
-        const snpBrake = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 0.12), matDarkSteel);
-        snpBrake.position.set(0, 0.02, -1.2); sniper.add(snpBrake);
-        const snpScope = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.045, 0.4), matBlack);
-        snpScope.rotation.x = Math.PI/2; snpScope.position.set(0, 0.12, -0.05); sniper.add(snpScope);
-        const snpMag = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.22, 0.12), matDarkSteel);
-        snpMag.position.set(0, -0.15, 0.02); sniper.add(snpMag);
+        sniper.add(new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.12, 0.65), matBlack)); // Receiver
+        const snpBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.026, 1.05), matDarkSteel); // Fluted heavy barrel
+        snpBarrel.rotation.x = Math.PI/2; snpBarrel.position.set(0, 0.02, -0.8); sniper.add(snpBarrel);
+        const snpBrake = new THREE.Mesh(new THREE.BoxGeometry(0.065, 0.065, 0.14), matDarkSteel); // Multi-port brake
+        snpBrake.position.set(0, 0.02, -1.35); sniper.add(snpBrake);
+        const snpCarryHandle = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.06, 0.35), matDarkSteel); // Carry handle underneath
+        snpCarryHandle.position.set(0, -0.1, -0.35); sniper.add(snpCarryHandle);
+        const snpBipodL = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.28, 0.02), matDarkSteel); // Bipod legs
+        snpBipodL.position.set(-0.06, -0.16, -0.55); snpBipodL.rotation.z = 0.2; sniper.add(snpBipodL);
+        const snpBipodR = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.28, 0.02), matDarkSteel);
+        snpBipodR.position.set(0.06, -0.16, -0.55); snpBipodR.rotation.z = -0.2; sniper.add(snpBipodR);
+        const snpScope = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.048, 0.45), matBlack); // Scope
+        snpScope.rotation.x = Math.PI/2; snpScope.position.set(0, 0.13, -0.05); sniper.add(snpScope);
+        const snpMag = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.24, 0.13), matDarkSteel); // Heavy mag
+        snpMag.position.set(0, -0.16, 0.05); sniper.add(snpMag);
         gunModels.push(sniper);
 
-        // 6: Rocket Launcher / Stinger (Military green tube, optics, rear cage)
+        // 6: FIM-92 Stinger / Missile Launcher (Rear Cage, Optical Sighting Box, Olive Tube)
         const rlauncher = new THREE.Group();
-        const rTube = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 1.2, 16), matOlive);
+        const rTube = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.085, 1.35, 20), matOlive); // Olive drab tube
         rTube.rotation.x = Math.PI/2; rlauncher.add(rTube);
-        const rOptic = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.14, 0.24), matDarkSteel);
-        rOptic.position.set(0.1, 0.06, -0.1); rlauncher.add(rOptic);
-        const rCage = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 0.2), matDarkSteel);
-        rCage.position.set(0, 0, 0.55); rlauncher.add(rCage);
+        const rFrontCap = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.06), matBlack); // Front cap ring
+        rFrontCap.rotation.x = Math.PI/2; rFrontCap.position.set(0, 0, -0.68); rlauncher.add(rFrontCap);
+        const rRearCage = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.24, 0.24), matDarkSteel); // Handling cage at rear
+        rRearCage.position.set(0, 0, 0.6); rlauncher.add(rRearCage);
+        const rOpticsBox = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.16, 0.28), matDarkSteel); // Sighting unit
+        rOpticsBox.position.set(0.12, 0.08, -0.12); rlauncher.add(rOpticsBox);
+        const rGrip = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.22, 0.09), matBlack);
+        rGrip.position.set(0, -0.18, -0.1); rGrip.rotation.x = -0.2; rlauncher.add(rGrip);
         gunModels.push(rlauncher);
 
-        // Add all gun models to holder
+        // Setup gun model positions
         gunModels.forEach(m => {
             m.visible = false;
             m.position.set(0.28, -0.24, -0.52);
             gunContainer.add(m);
         });
 
-        function updateEquippedGunVisual() {
-            gunModels.forEach((m, idx) => {
-                m.visible = (idx === WEAPONS.indexOf(WEAPONS[equippedSlots[activeSlot]]));
-            });
+        function updateHUD() {
             const wep = WEAPONS[equippedSlots[activeSlot]];
+            gunModels.forEach((m, idx) => {
+                m.visible = (idx === equippedSlots[activeSlot]);
+            });
             document.getElementById('weapon-name').innerText = wep.name;
             document.getElementById('weapon-slot').innerText = activeSlot === 0 ? "Primary Weapon" : "Secondary Weapon";
+            document.getElementById('cur-ammo').innerText = wep.curAmmo;
+            document.getElementById('max-ammo').innerText = wep.mag;
+            document.getElementById('ammo-bar').style.width = ((wep.curAmmo / wep.mag) * 100) + '%';
         }
-        updateEquippedGunVisual();
+        updateHUD();
 
-        // --- 6. MOVEMENT & INPUT ENGINE ---
+        // --- 6. PLAYER CONTROLS & PHYSICAL COLLISION ENGINE ---
         const keys = {};
         let playerVel = new THREE.Vector3();
         let canJump = false;
 
         window.addEventListener('keydown', (e) => {
             keys[e.code] = true;
-            if (e.key === '1') { activeSlot = 0; updateEquippedGunVisual(); }
-            if (e.key === '2') { activeSlot = 1; updateEquippedGunVisual(); }
+            if (e.key === '1') { activeSlot = 0; updateHUD(); }
+            if (e.key === '2') { activeSlot = 1; updateHUD(); }
+            if (e.key === 'r' || e.key === 'R') reloadWeapon();
         });
         window.addEventListener('keyup', (e) => { keys[e.code] = false; });
 
-        // --- 7. AIM DOWN SIGHTS (ADS) & RECOIL ---
+        // --- 7. AUTOMATIC FIRING (Hold Left-Click to Shoot) ---
+        let isMouseDown = false;
         let isAiming = false;
         let lastShootTime = 0;
 
         window.addEventListener('mousedown', (e) => {
             if (e.button === 2) isAiming = true;
-            if (e.button === 0 && controls.isLocked) fireCurrentWeapon();
+            if (e.button === 0) isMouseDown = true;
         });
         window.addEventListener('mouseup', (e) => {
             if (e.button === 2) isAiming = false;
+            if (e.button === 0) isMouseDown = false;
         });
 
         const bullets = [];
         const explosions = [];
 
-        function fireCurrentWeapon() {
+        function attemptFire() {
+            if (!controls.isLocked || isReloading) return;
             const wep = WEAPONS[equippedSlots[activeSlot]];
             const now = performance.now();
+
+            if (wep.curAmmo <= 0) {
+                reloadWeapon();
+                return;
+            }
+
             if (now - lastShootTime < wep.rate) return;
             lastShootTime = now;
 
+            // Consume ammunition
+            wep.curAmmo--;
+            updateHUD();
+
             playGunSound(wep.sound);
 
-            // Gun Kick Recoil (Reduced significantly when ADS)
+            // Gun kickback recoil animation (Aiming heavily reduces recoil)
             const currentGun = gunModels[equippedSlots[activeSlot]];
             const recoilFactor = isAiming ? 0.35 : 1.0;
             currentGun.position.z += wep.recoil * recoilFactor;
             currentGun.rotation.x += wep.recoil * 1.6 * recoilFactor;
 
-            // Projectiles & Pellets
+            // Projectile creation
             const pelletCount = wep.pellets || 1;
             for (let i = 0; i < pelletCount; i++) {
-                // ADS spreads are up to 85% tighter
+                // Aiming tightens spread by up to 85%
                 const spreadVal = isAiming ? (wep.spread * 0.15) : wep.spread;
                 const dir = new THREE.Vector3();
                 camera.getWorldDirection(dir);
                 dir.x += (Math.random() - 0.5) * spreadVal;
                 dir.y += (Math.random() - 0.5) * spreadVal;
 
-                // Visual Projectile
                 let projMesh;
                 if (wep.isRocket) {
                     projMesh = new THREE.Mesh(
-                        new THREE.CylinderGeometry(0.04, 0.04, 0.4),
+                        new THREE.CylinderGeometry(0.04, 0.04, 0.45),
                         new THREE.MeshBasicMaterial({ color: 0xff3300 })
                     );
                     projMesh.rotation.x = Math.PI / 2;
@@ -533,35 +619,44 @@
             }
         }
 
-        // --- 8. EXPLOSION ENGINE (For Rocket Launcher) ---
-        function triggerRocketExplosion(position) {
+        function reloadWeapon() {
+            const wep = WEAPONS[equippedSlots[activeSlot]];
+            if (isReloading || wep.curAmmo === wep.mag) return;
+            isReloading = true;
+            document.getElementById('reload-msg').style.display = 'block';
+
+            setTimeout(() => {
+                wep.curAmmo = wep.mag;
+                isReloading = false;
+                document.getElementById('reload-msg').style.display = 'none';
+                updateHUD();
+            }, wep.reloadTime * 1000);
+        }
+
+        // --- 8. ROCKET EXPLOSION ENGINE ---
+        function triggerRocketExplosion(pos) {
             playExplosionSound();
 
-            // Expanding Fireball Sphere
             const expMesh = new THREE.Mesh(
-                new THREE.SphereGeometry(0.6, 16, 16),
-                new THREE.MeshBasicMaterial({ color: 0xff6600, wireframe: true })
+                new THREE.SphereGeometry(0.7, 16, 16),
+                new THREE.MeshBasicMaterial({ color: 0xff5500, wireframe: true })
             );
-            expMesh.position.copy(position);
+            expMesh.position.copy(pos);
             scene.add(expMesh);
 
-            explosions.push({
-                mesh: expMesh,
-                scale: 1,
-                spawned: performance.now()
-            });
+            explosions.push({ mesh: expMesh, scale: 1, spawned: performance.now() });
 
-            // Area of effect damage check against targets within 8 meters
+            // Damage all targets within 8-meter blast radius
             targets.forEach(tgt => {
-                const dist = tgt.position.distanceTo(position);
+                const dist = tgt.position.distanceTo(pos);
                 if (dist < 8.0) {
-                    showHitmarker(dist < 3.0);
-                    playHitSound(dist < 3.0);
+                    showHitmarker(dist < 3.2);
+                    playHitSound(dist < 3.2);
                 }
             });
         }
 
-        // --- 9. MAIN GAME LOOP ---
+        // --- 9. GAME ANIMATION & PHYSICAL COLLISION LOOP ---
         let prevTime = performance.now();
         const gravity = -30.0;
 
@@ -571,7 +666,15 @@
             const dt = Math.min((now - prevTime) / 1000, 0.1);
             prevTime = now;
 
-            // Player Walking & Jumping
+            // Handle continuous shooting (Hold Left-Click)
+            const wep = WEAPONS[equippedSlots[activeSlot]];
+            if (isMouseDown) {
+                if (wep.auto || now - lastShootTime >= wep.rate) {
+                    attemptFire();
+                }
+            }
+
+            // Player Walking & Solid Box Collisions
             if (controls.isLocked) {
                 const moveSpeed = keys['ShiftLeft'] ? 17.0 : 10.0;
                 playerVel.x -= playerVel.x * 10.0 * dt;
@@ -588,8 +691,28 @@
                 if (keys['KeyW'] || keys['KeyS']) playerVel.z += moveDir.z * moveSpeed * 8.0 * dt;
                 if (keys['KeyA'] || keys['KeyD']) playerVel.x += moveDir.x * moveSpeed * 8.0 * dt;
 
+                // Test potential movement against solid obstacle bounding boxes
+                const originalPos = camera.position.clone();
                 controls.moveRight(playerVel.x * dt);
                 controls.moveForward(playerVel.z * dt);
+
+                // Collision Detection against all containers & walls
+                const playerRadius = 0.55;
+                for (let box of colliders) {
+                    if (
+                        camera.position.x + playerRadius > box.minX &&
+                        camera.position.x - playerRadius < box.maxX &&
+                        camera.position.z + playerRadius > box.minZ &&
+                        camera.position.z - playerRadius < box.maxZ &&
+                        camera.position.y - 1.5 < box.maxY &&
+                        camera.position.y > box.minY
+                    ) {
+                        // Collision hit: revert position so player cannot walk through
+                        camera.position.x = originalPos.x;
+                        camera.position.z = originalPos.z;
+                        break;
+                    }
+                }
 
                 camera.position.y += playerVel.y * dt;
                 if (camera.position.y < 1.6) {
@@ -603,19 +726,18 @@
                 }
             }
 
-            // Weapon ADS & Scopes Alignment
+            // Weapon ADS & Scope Sights Alignment
             const currentWep = WEAPONS[equippedSlots[activeSlot]];
             const targetFOV = isAiming ? currentWep.zoom : 75;
             camera.fov = THREE.MathUtils.lerp(camera.fov, targetFOV, dt * 16);
             camera.updateProjectionMatrix();
 
-            // Toggle custom scopes per gun
             document.getElementById('scope-sniper').style.display = (currentWep.scope === 'sniper' && isAiming && camera.fov < 25) ? 'block' : 'none';
             document.getElementById('scope-reddot').style.display = (currentWep.scope === 'reddot' && isAiming) ? 'block' : 'none';
             document.getElementById('scope-ghostring').style.display = (currentWep.scope === 'ghostring' && isAiming) ? 'block' : 'none';
             document.getElementById('scope-launcher').style.display = (currentWep.scope === 'launcher' && isAiming) ? 'block' : 'none';
 
-            // Gun kick recovery & ADS positioning
+            // Gun recoil recovery and sights centering
             const currentGun = gunModels[equippedSlots[activeSlot]];
             const restX = isAiming ? 0 : 0.28;
             const restY = isAiming ? -0.15 : -0.24;
@@ -625,19 +747,18 @@
             currentGun.position.z = THREE.MathUtils.lerp(currentGun.position.z, restZ, dt * 12);
             currentGun.rotation.x = THREE.MathUtils.lerp(currentGun.rotation.x, 0, dt * 14);
 
-            // Hide gun model when looking through the sniper black optic
             currentGun.visible = !(currentWep.scope === 'sniper' && isAiming && camera.fov < 25);
 
-            // Ballistic Bullets & Missiles
+            // Ballistic Bullets & Impact Physics
             for (let i = bullets.length - 1; i >= 0; i--) {
                 const b = bullets[i];
-                b.velocity.y += (b.isRocket ? -4.0 : -14.0) * dt; // Gravity arc
+                b.velocity.y += (b.isRocket ? -4.0 : -14.0) * dt;
                 const step = b.velocity.clone().multiplyScalar(dt);
 
-                // Raycast collision against targets and map obstacles
                 const ray = new THREE.Raycaster(b.mesh.position, b.velocity.clone().normalize(), 0, step.length());
                 const targetHits = ray.intersectObjects(targets);
-                const wallHits = ray.intersectObjects(obstacles);
+                const wallMeshes = colliders.map(c => c.mesh);
+                const wallHits = ray.intersectObjects(wallMeshes);
 
                 if (targetHits.length > 0 || wallHits.length > 0) {
                     const hitPos = (targetHits.length > 0) ? targetHits[0].point : wallHits[0].point;
@@ -657,7 +778,6 @@
 
                 b.mesh.position.add(step);
 
-                // Despawn or ground impact
                 if (now - b.spawned > 3000 || b.mesh.position.y <= 0) {
                     if (b.isRocket) triggerRocketExplosion(b.mesh.position);
                     scene.remove(b.mesh);
@@ -665,11 +785,11 @@
                 }
             }
 
-            // Explosion Shockwave Animation
+            // Explosion Shockwave Expanding Animation
             for (let i = explosions.length - 1; i >= 0; i--) {
                 const exp = explosions[i];
                 const age = (now - exp.spawned) / 1000;
-                exp.scale += dt * 25.0;
+                exp.scale += dt * 26.0;
                 exp.mesh.scale.set(exp.scale, exp.scale, exp.scale);
                 if (age > 0.45) {
                     scene.remove(exp.mesh);
@@ -681,7 +801,7 @@
         }
         animate();
 
-        // --- 10. UI & LOADOUT CONTROLLERS ---
+        // --- 10. UI & HIT FEEDBACK ---
         function showHitmarker(isCrit) {
             const hm = document.getElementById('hitmarker');
             hm.style.display = 'block';
@@ -703,7 +823,7 @@
             const s = parseInt(document.getElementById('secondary-select').value);
             equippedSlots = [p, s];
             activeSlot = 0;
-            updateEquippedGunVisual();
+            updateHUD();
             document.getElementById('loadout-modal').style.display = 'none';
             controls.lock();
         }
