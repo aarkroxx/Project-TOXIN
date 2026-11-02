@@ -2,66 +2,107 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Project TOXIN</title>
+    <title>Project TOXIN - Deadshot Edition</title>
     <style>
-        body { margin: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', Tahoma, sans-serif; user-select: none; }
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; user-select: none; }
+        
+        /* Reticles & Sights */
         #crosshair {
             position: absolute; top: 50%; left: 50%;
-            width: 6px; height: 6px; background: rgba(255, 255, 255, 0.9);
+            width: 6px; height: 6px; background: rgba(255, 255, 255, 0.95);
             transform: translate(-50%, -50%); border-radius: 50%;
             box-shadow: 0 0 4px #000; pointer-events: none; z-index: 10;
         }
         #hitmarker {
             position: absolute; top: 50%; left: 50%;
-            width: 20px; height: 20px; transform: translate(-50%, -50%) rotate(45deg);
+            width: 24px; height: 24px; transform: translate(-50%, -50%) rotate(45deg);
             pointer-events: none; z-index: 11; display: none;
         }
-        #hitmarker::before, #hitmarker::after {
-            content: ''; position: absolute; background: red;
-        }
-        #hitmarker::before { top: 9px; left: 0; width: 20px; height: 2px; }
-        #hitmarker::after { top: 0; left: 9px; width: 2px; height: 20px; }
+        #hitmarker::before, #hitmarker::after { content: ''; position: absolute; background: #ff2222; }
+        #hitmarker::before { top: 11px; left: 0; width: 24px; height: 2px; }
+        #hitmarker::after { top: 0; left: 11px; width: 2px; height: 24px; }
 
-        /* Sniper Scope Overlay */
-        #sniper-scope {
+        /* Scope Overlays */
+        #scope-sniper {
             position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
             pointer-events: none; z-index: 15; display: none;
-            background: radial-gradient(circle at center, transparent 32%, black 33%, black 100%);
+            background: radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.98) 31%, #000 100%);
         }
-        #sniper-crosshair {
+        #scope-sniper .reticle-h { position: absolute; top: 50%; left: 0; width: 100vw; height: 1.5px; background: rgba(0,0,0,0.85); transform: translateY(-50%); }
+        #scope-sniper .reticle-v { position: absolute; top: 0; left: 50%; width: 1.5px; height: 100vh; background: rgba(0,0,0,0.85); transform: translateX(-50%); }
+
+        #scope-reddot {
             position: absolute; top: 50%; left: 50%;
-            width: 100vw; height: 1px; background: rgba(0, 0, 0, 0.8);
-            transform: translateY(-50%);
+            width: 140px; height: 140px; border: 3px solid rgba(30, 30, 30, 0.9);
+            border-radius: 50%; transform: translate(-50%, -50%);
+            box-shadow: 0 0 15px rgba(0,0,0,0.8) inset;
+            pointer-events: none; z-index: 15; display: none;
+            background: rgba(100, 200, 255, 0.08);
         }
-        #sniper-crosshair-v {
-            position: absolute; top: 50%; left: 50%;
-            width: 1px; height: 100vh; background: rgba(0, 0, 0, 0.8);
-            transform: translateX(-50%);
+        #scope-reddot::after {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            width: 6px; height: 6px; background: #ff1100; border-radius: 50%;
+            transform: translate(-50%, -50%); box-shadow: 0 0 8px #ff0000;
         }
 
-        /* HUD */
+        #scope-ghostring {
+            position: absolute; top: 50%; left: 50%;
+            width: 110px; height: 110px; border: 4px solid #111;
+            border-radius: 50%; transform: translate(-50%, -50%);
+            pointer-events: none; z-index: 15; display: none;
+        }
+        #scope-ghostring::after {
+            content: ''; position: absolute; bottom: 15px; left: 50%;
+            width: 4px; height: 35px; background: #ff8800; transform: translateX(-50%);
+        }
+
+        #scope-launcher {
+            position: absolute; top: 50%; left: 50%;
+            width: 320px; height: 240px; border: 2px solid #00ff66;
+            transform: translate(-50%, -50%); pointer-events: none; z-index: 15; display: none;
+            background: rgba(0, 255, 100, 0.05); box-shadow: 0 0 20px rgba(0,255,100,0.2) inset;
+        }
+        #scope-launcher .bracket {
+            position: absolute; top: 50%; left: 50%; width: 60px; height: 60px;
+            border: 2px dashed #00ff66; transform: translate(-50%, -50%);
+        }
+
+        /* HUD & Loadout Selection */
         #hud {
             position: absolute; bottom: 25px; right: 35px; color: #fff;
-            z-index: 10; text-align: right; text-shadow: 2px 2px 4px #000;
+            z-index: 10; text-align: right; text-shadow: 2px 2px 5px #000;
         }
-        #weapon-name { font-size: 32px; font-weight: 800; letter-spacing: 1px; margin: 0; color: #ffcc00; }
-        #ammo-display { font-size: 22px; font-weight: 600; color: #ddd; }
+        #weapon-name { font-size: 34px; font-weight: 900; color: #ffcc00; margin: 0; }
+        #weapon-slot { font-size: 16px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
 
-        #ui {
-            position: absolute; top: 20px; left: 20px; color: white;
-            z-index: 10; background: rgba(15, 15, 15, 0.85); padding: 16px;
-            border-radius: 8px; border: 1px solid #333; backdrop-filter: blur(4px);
-        }
         #critical-popup {
             position: absolute; top: 38%; left: 50%;
-            transform: translate(-50%, -50%); color: #ff2222;
-            font-size: 42px; font-weight: 900; display: none;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.8), 2px 2px #000;
+            transform: translate(-50%, -50%); color: #ff1111;
+            font-size: 48px; font-weight: 900; display: none;
+            text-shadow: 0 0 15px rgba(255, 0, 0, 0.9), 3px 3px #000;
             pointer-events: none; z-index: 20; letter-spacing: 2px;
         }
-        button { background: #ffcc00; border: none; padding: 7px 14px; font-weight: bold; border-radius: 4px; cursor: pointer; color: #111; }
+
+        #ui-panel {
+            position: absolute; top: 20px; left: 20px; color: white;
+            z-index: 10; background: rgba(15, 17, 20, 0.88); padding: 18px;
+            border-radius: 10px; border: 1px solid #333; backdrop-filter: blur(6px);
+            width: 290px;
+        }
+        button { background: #ffcc00; border: none; padding: 7px 14px; font-weight: bold; border-radius: 5px; cursor: pointer; color: #111; }
         button:hover { background: #ffe066; }
         input { padding: 6px; width: 90px; border-radius: 4px; border: 1px solid #555; background: #222; color: #fff; }
+
+        /* Party Mode 2-Weapon Loadout Modal */
+        #loadout-modal {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(18, 22, 28, 0.96); border: 2px solid #ffcc00; border-radius: 12px;
+            padding: 24px; color: white; z-index: 30; width: 440px; box-shadow: 0 0 30px rgba(0,0,0,0.8);
+        }
+        .loadout-row { margin: 15px 0; }
+        .loadout-row select {
+            width: 100%; padding: 8px; background: #2a313d; color: #fff; border: 1px solid #555; border-radius: 6px; font-size: 15px;
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
@@ -72,81 +113,142 @@
     <div id="hitmarker"></div>
     <div id="critical-popup">CRITICAL!</div>
 
-    <div id="sniper-scope">
-        <div id="sniper-crosshair"></div>
-        <div id="sniper-crosshair-v"></div>
-    </div>
+    <!-- Scopes -->
+    <div id="scope-sniper"><div class="reticle-h"></div><div class="reticle-v"></div></div>
+    <div id="scope-reddot"></div>
+    <div id="scope-ghostring"></div>
+    <div id="scope-launcher"><div class="bracket"></div></div>
 
+    <!-- HUD -->
     <div id="hud">
+        <div id="weapon-slot">Primary Weapon</div>
         <div id="weapon-name">AK-47</div>
-        <div id="ammo-display">[1-7] Switch Weapon</div>
+        <div style="font-size: 14px; color: #888; margin-top: 4px;">Press [1] or [2] to switch</div>
     </div>
 
-    <div id="ui">
-        <h3 style="margin: 0 0 8px 0; color: #ffcc00;">PROJECT TOXIN</h3>
-        <button onclick="createParty()">Create Party</button>
+    <!-- Menu Panel -->
+    <div id="ui-panel">
+        <h3 style="margin: 0 0 6px 0; color: #ffcc00; letter-spacing: 1px;">PROJECT TOXIN</h3>
+        <p style="font-size: 12px; color: #999; margin: 0 0 12px 0;">Deadshot Arena Engine</p>
+        <button onclick="openLoadout()">Change Loadout</button>
+        <button onclick="createParty()">Party</button>
         <input type="text" id="partyCode" placeholder="Code">
         <button onclick="joinParty()">Join</button>
-        <p id="status" style="color: #aaa; font-size: 13px; margin: 8px 0;">Click anywhere to play.</p>
-        <small style="color: #888;">
-            <b>W, A, S, D</b>: Walk | <b>SPACE</b>: Jump | <b>SHIFT</b>: Sprint<br>
-            <b>Right-Click</b>: Aim (ADS) | <b>Left-Click</b>: Shoot<br>
-            <b>Keys 1 to 7</b>: Change Weapons
+        <p id="status" style="color: #ffcc00; font-size: 13px; margin: 12px 0 6px 0;">Click anywhere to start.</p>
+        <small style="color: #777; line-height: 1.4; display: block;">
+            <b>W, A, S, D</b>: Walk | <b>SHIFT</b>: Sprint | <b>SPACE</b>: Jump<br>
+            <b>Right-Click</b>: Aim (ADS + Reduced Spread)<br>
+            <b>Left-Click</b>: Fire | <b>1, 2</b>: Primary / Secondary
         </small>
     </div>
 
+    <!-- 2-Weapon Loadout Modal -->
+    <div id="loadout-modal" style="display: none;">
+        <h2 style="margin: 0 0 8px 0; color: #ffcc00;">SELECT YOUR 2 WEAPONS</h2>
+        <p style="color: #aaa; font-size: 13px;">Pick your primary and secondary weapon for the match:</p>
+        
+        <div class="loadout-row">
+            <label><b>Slot 1 (Primary):</b></label>
+            <select id="primary-select">
+                <option value="0">AK-47 (Assault Rifle)</option>
+                <option value="4">SPAS-12 (Combat Shotgun)</option>
+                <option value="5">CheyTac M200 (Heavy Sniper)</option>
+                <option value="6">Stinger / Launcher (Explosive)</option>
+            </select>
+        </div>
+
+        <div class="loadout-row">
+            <label><b>Slot 2 (Secondary):</b></label>
+            <select id="secondary-select">
+                <option value="1">Glock 17 (Semi-Auto Pistol)</option>
+                <option value="2">Micro Uzi (Rapid Machine Pistol)</option>
+                <option value="3">MP40 (Submachine Gun)</option>
+            </select>
+        </div>
+
+        <button onclick="applyLoadout()" style="width: 100%; padding: 10px; margin-top: 10px;">CONFIRM LOADOUT</button>
+    </div>
+
     <script>
-        // --- 1. AUDIO SYNTHESIZER (No external sound files required) ---
+        // --- 1. PROCEDURAL SOUND SYNTHESIZER ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playGunSound(pitch = 1, volume = 0.3) {
+        function playGunSound(type) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
+            const now = audioCtx.currentTime;
+
+            if (type === 'rocket_fire') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(140, now);
+                osc.frequency.linearRampToValueAtTime(40, now + 0.4);
+                gain.gain.setValueAtTime(0.4, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(now); osc.stop(now + 0.4);
+                return;
+            }
+
+            const bufferSize = audioCtx.sampleRate * 0.1;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buffer;
+            const gain = audioCtx.createGain();
+
+            let vol = type === 'sniper' ? 0.7 : (type === 'shotgun' ? 0.6 : 0.3);
+            gain.gain.setValueAtTime(vol, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + (type === 'sniper' ? 0.25 : 0.12));
+
+            noise.connect(gain); gain.connect(audioCtx.destination);
+            noise.start(now);
+        }
+
+        function playExplosionSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const now = audioCtx.currentTime;
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            const noise = audioCtx.createBufferSource();
-            
-            // Noise buffer
-            const bufferSize = audioCtx.sampleRate * 0.08;
-            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-            const output = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) output[i] = Math.random() * 2 - 1;
-            noise.buffer = buffer;
-
-            gain.gain.setValueAtTime(volume, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
-            noise.connect(gain);
-            gain.connect(audioCtx.destination);
-            noise.start();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(100, now);
+            osc.frequency.exponentialRampToValueAtTime(20, now + 0.8);
+            gain.gain.setValueAtTime(1.0, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.9);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(now); osc.stop(now + 0.9);
         }
 
         function playHitSound(isCrit) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            osc.frequency.setValueAtTime(isCrit ? 880 : 440, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(isCrit ? 900 : 450, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.08);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.08);
         }
 
-        // --- 2. WEAPON DEFINITIONS (Matching your images) ---
+        // --- 2. WEAPON DEFINITIONS & STATS ---
         const WEAPONS = [
-            { name: "AK-47", rate: 110, speed: 200, spread: 0.02, recoil: 0.08, zoom: 55, isSniper: false, pellets: 1 },
-            { name: "Glock 17", rate: 180, speed: 160, spread: 0.015, recoil: 0.04, zoom: 60, isSniper: false, pellets: 1 },
-            { name: "Micro Uzi", rate: 65, speed: 150, spread: 0.035, recoil: 0.05, zoom: 60, isSniper: false, pellets: 1 },
-            { name: "MP40", rate: 120, speed: 170, spread: 0.018, recoil: 0.04, zoom: 55, isSniper: false, pellets: 1 },
-            { name: "SPAS-12", rate: 500, speed: 140, spread: 0.06, recoil: 0.15, zoom: 60, isSniper: false, pellets: 8 },
-            { name: "CheyTac M200", rate: 800, speed: 380, spread: 0.001, recoil: 0.25, zoom: 12, isSniper: true, pellets: 1 },
-            { name: "Rocket Launcher", rate: 900, speed: 65, spread: 0.005, recoil: 0.3, zoom: 50, isSniper: false, pellets: 1, isRocket: true }
+            { name: "AK-47", rate: 110, speed: 220, spread: 0.022, recoil: 0.08, zoom: 55, scope: 'iron', sound: 'rifle' },
+            { name: "Glock 17", rate: 180, speed: 170, spread: 0.014, recoil: 0.04, zoom: 60, scope: 'iron', sound: 'pistol' },
+            { name: "Micro Uzi", rate: 60, speed: 160, spread: 0.038, recoil: 0.045, zoom: 58, scope: 'reddot', sound: 'uzi' },
+            { name: "MP40", rate: 125, speed: 180, spread: 0.018, recoil: 0.04, zoom: 55, scope: 'iron', sound: 'smg' },
+            { name: "SPAS-12", rate: 550, speed: 150, spread: 0.065, recoil: 0.16, zoom: 60, scope: 'ghostring', sound: 'shotgun', pellets: 8 },
+            { name: "CheyTac M200", rate: 850, speed: 450, spread: 0.0005, recoil: 0.32, zoom: 12, scope: 'sniper', sound: 'sniper' },
+            { name: "Rocket Launcher", rate: 1000, speed: 60, spread: 0.003, recoil: 0.35, zoom: 50, scope: 'launcher', sound: 'rocket_fire', isRocket: true }
         ];
-        let currentWepIdx = 0;
 
-        // --- 3. SCENE, CAMERA & LIGHTS ---
+        let equippedSlots = [0, 1]; // Default: AK-47 & Glock
+        let activeSlot = 0; // 0 = Primary, 1 = Secondary
+
+        // --- 3. SCENE, CAMERA & LIGHTING ---
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x87ceeb); // Sky blue
-        scene.fog = new THREE.Fog(0x87ceeb, 20, 120);
+        scene.background = new THREE.Color(0xa3c5e8);
+        scene.fog = new THREE.Fog(0xa3c5e8, 30, 140);
 
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -155,146 +257,275 @@
         document.body.appendChild(renderer.domElement);
 
         const controls = new THREE.PointerLockControls(camera, document.body);
-        document.body.addEventListener('click', () => { controls.lock(); audioCtx.resume(); });
+        document.body.addEventListener('click', () => {
+            if (document.getElementById('loadout-modal').style.display === 'none') {
+                controls.lock();
+                audioCtx.resume();
+            }
+        });
 
-        const sun = new THREE.DirectionalLight(0xffffff, 1.2);
-        sun.position.set(40, 60, 20);
+        const sun = new THREE.DirectionalLight(0xffffff, 1.3);
+        sun.position.set(45, 60, 25);
         sun.castShadow = true;
+        sun.shadow.mapSize.width = 2048; sun.shadow.mapSize.height = 2048;
         scene.add(sun);
-        scene.add(new THREE.AmbientLight(0x778899));
+        scene.add(new THREE.AmbientLight(0x708090, 0.8));
 
-        // --- 4. 3D ARENA ENVIRONMENT (Deadshot style) ---
-        // Ground
-        const floorGeo = new THREE.PlaneGeometry(200, 200);
-        const floorMat = new THREE.MeshLambertMaterial({ color: 0x4a4f55 });
-        const floor = new THREE.Mesh(floorGeo, floorMat);
+        // --- 4. DEADSHOT ARENA ENVIRONMENT ---
+        // Clean Arena Floor
+        const floorMat = new THREE.MeshLambertMaterial({ color: 0x3e444c });
+        const floor = new THREE.Mesh(new THREE.PlaneGeometry(240, 240), floorMat);
         floor.rotation.x = -Math.PI / 2;
         floor.receiveShadow = true;
         scene.add(floor);
 
-        // Crates and Shipping Containers
-        function spawnBox(x, y, z, w, h, d, color) {
-            const mesh = new THREE.Mesh(
-                new THREE.BoxGeometry(w, h, d),
-                new THREE.MeshLambertMaterial({ color })
-            );
+        // Map Obstacles & Structures
+        const obstacles = [];
+        function createBox(x, y, z, w, h, d, color) {
+            const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshLambertMaterial({ color }));
             mesh.position.set(x, y + h/2, z);
             mesh.castShadow = true;
             mesh.receiveShadow = true;
             scene.add(mesh);
+            obstacles.push(mesh);
+            return mesh;
         }
-        spawnBox(-8, 0, -15, 3, 3, 6, 0xcc5533); // Red Container
-        spawnBox(8, 0, -20, 3, 3, 6, 0x2266aa);  // Blue Container
-        spawnBox(0, 0, -28, 12, 4, 3, 0x555555); // Wall barrier
-        spawnBox(-12, 0, -32, 2, 2, 2, 0x887755); // Wood crates
-        spawnBox(12, 0, -32, 2, 2, 2, 0x887755);
 
-        // Targets (Silhouette Dummy from Image 2)
+        // Two-Story Sniper Platform & Ramp
+        createBox(0, 0, -32, 16, 5, 10, 0x47525d); // Bunker base
+        createBox(0, 5, -34, 16, 1.2, 1, 0x222222); // Railing
+        createBox(-12, 0, -22, 6, 2.5, 12, 0x824b35); // Wooden ramp / catwalk
+
+        // Colored Containers (Deadshot signature style)
+        createBox(-10, 0, -12, 3.5, 3.5, 7, 0xd03d33); // Red Container
+        createBox(12, 0, -18, 3.5, 3.5, 7, 0x2b72b8);  // Blue Container
+        createBox(12, 3.5, -18, 3.5, 3.5, 7, 0xcca01a); // Yellow Container on top
+        createBox(0, 0, -10, 4, 1.4, 1.2, 0x2e353d); // Mid barricade
+
+        // Boundary Arena Walls
+        createBox(0, 0, -70, 160, 12, 4, 0x2d3238);
+        createBox(-80, 0, 0, 4, 12, 160, 0x2d3238);
+        createBox(80, 0, 0, 4, 12, 160, 0x2d3238);
+        createBox(0, 0, 70, 160, 12, 4, 0x2d3238);
+
+        // Practice Target Dummies (Concentric Silhouette from Image 2)
         const targets = [];
-        function spawnTarget(x, z) {
+        function spawnSilhouetteTarget(x, y, z) {
             const group = new THREE.Group();
-            
-            // Head
+
+            // Head (Critical hit spot)
             const head = new THREE.Mesh(
-                new THREE.SphereGeometry(0.28, 16, 16),
+                new THREE.SphereGeometry(0.3, 16, 16),
                 new THREE.MeshBasicMaterial({ color: 0xd9383a })
             );
             head.position.y = 1.85;
-            head.userData = { isHead: true };
+            head.userData = { isHead: true, parentGroup: group };
             group.add(head);
 
-            // Body
+            // Torso (Dark silhouette body)
             const body = new THREE.Mesh(
-                new THREE.CylinderGeometry(0.35, 0.35, 1.1, 16),
-                new THREE.MeshLambertMaterial({ color: 0x1f2421 })
+                new THREE.BoxGeometry(0.7, 1.1, 0.15),
+                new THREE.MeshLambertMaterial({ color: 0x1b1f24 })
             );
             body.position.y = 1.05;
-            body.userData = { isHead: false };
+            body.userData = { isHead: false, parentGroup: group };
             group.add(body);
 
-            // Stand pole
-            const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.5), new THREE.MeshBasicMaterial({ color: 0x666 }));
-            pole.position.y = 0.25;
+            // Red Center "X" Bullseye
+            const bullseye = new THREE.Mesh(
+                new THREE.BoxGeometry(0.35, 0.45, 0.17),
+                new THREE.MeshBasicMaterial({ color: 0xd9383a })
+            );
+            bullseye.position.set(0, 1.05, 0.01);
+            bullseye.userData = { isHead: false, parentGroup: group };
+            group.add(bullseye);
+
+            // Stand Pole
+            const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.6), new THREE.MeshBasicMaterial({ color: 0x555555 }));
+            pole.position.y = 0.3;
             group.add(pole);
 
-            group.position.set(x, 0, z);
+            group.position.set(x, y, z);
             scene.add(group);
-            targets.push(head, body);
+            targets.push(head, body, bullseye);
         }
-        spawnTarget(0, -12);
-        spawnTarget(-6, -24);
-        spawnTarget(6, -24);
-        spawnTarget(0, -45);
+        spawnSilhouetteTarget(0, 0, -18);
+        spawnSilhouetteTarget(-8, 0, -28);
+        spawnSilhouetteTarget(8, 0, -28);
+        spawnSilhouetteTarget(0, 5, -34); // High vantage rooftop sniper dummy
+        spawnSilhouetteTarget(15, 0, -45);
 
-        // --- 5. 3D GUN VIEWMODEL (Rendered in hands) ---
-        const gunHolder = new THREE.Group();
-        camera.add(gunHolder);
+        // --- 5. DETAILED PROCEDURAL 3D GUN MODELS ---
+        const gunContainer = new THREE.Group();
+        camera.add(gunContainer);
         scene.add(camera);
 
-        const gunMesh = new THREE.Mesh(
-            new THREE.BoxGeometry(0.08, 0.12, 0.65),
-            new THREE.MeshLambertMaterial({ color: 0x222222 })
-        );
-        gunMesh.position.set(0.28, -0.25, -0.55);
-        gunHolder.add(gunMesh);
+        const gunModels = [];
+        const matBlack = new THREE.MeshLambertMaterial({ color: 0x1a1a1a });
+        const matDarkSteel = new THREE.MeshLambertMaterial({ color: 0x2e3236 });
+        const matWood = new THREE.MeshLambertMaterial({ color: 0x733f1f });
+        const matOlive = new THREE.MeshLambertMaterial({ color: 0x4a5d3f });
 
-        // --- 6. WASD CONTROLS & MOVEMENT ---
+        // 0: AK-47 (Wood stock/handguard, steel banana mag)
+        const ak = new THREE.Group();
+        ak.add(new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.11, 0.5), matDarkSteel)); // Receiver
+        const akStock = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.12, 0.32), matWood);
+        akStock.position.set(0, -0.04, 0.36); ak.add(akStock);
+        const akHandguard = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.09, 0.24), matWood);
+        akHandguard.position.set(0, 0.01, -0.32); ak.add(akHandguard);
+        const akBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.35), matDarkSteel);
+        akBarrel.rotation.x = Math.PI/2; akBarrel.position.set(0, 0.03, -0.58); ak.add(akBarrel);
+        const akMag = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.24, 0.11), matDarkSteel);
+        akMag.position.set(0, -0.15, -0.06); akMag.rotation.x = 0.3; ak.add(akMag);
+        gunModels.push(ak);
+
+        // 1: Glock 17 (Black slide, polymer grip)
+        const glock = new THREE.Group();
+        glock.add(new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.07, 0.3), matBlack)); // Slide
+        const glockGrip = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.18, 0.09), matDarkSteel);
+        glockGrip.position.set(0, -0.1, 0.06); glockGrip.rotation.x = -0.25; glock.add(glockGrip);
+        gunModels.push(glock);
+
+        // 2: Micro Uzi (Boxy body, top rail, grip mag)
+        const uzi = new THREE.Group();
+        uzi.add(new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.12, 0.34), matBlack));
+        const uziGrip = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.22, 0.08), matDarkSteel);
+        uziGrip.position.set(0, -0.14, 0.02); uzi.add(uziGrip);
+        const uziBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.1), matDarkSteel);
+        uziBarrel.rotation.x = Math.PI/2; uziBarrel.position.set(0, -0.01, -0.22); uzi.add(uziBarrel);
+        gunModels.push(uzi);
+
+        // 3: MP40 (Slim tube receiver, long vertical mag)
+        const mp40 = new THREE.Group();
+        const mpBody = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.5), matDarkSteel);
+        mpBody.rotation.x = Math.PI/2; mp40.add(mpBody);
+        const mpMag = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.28, 0.06), matBlack);
+        mpMag.position.set(0, -0.16, -0.12); mp40.add(mpMag);
+        const mpGrip = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.16, 0.07), matBlack);
+        mpGrip.position.set(0, -0.1, 0.18); mpGrip.rotation.x = -0.3; mp40.add(mpGrip);
+        gunModels.push(mp40);
+
+        // 4: SPAS-12 (Ribbed heat shield, combat pump)
+        const spas = new THREE.Group();
+        spas.add(new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.12, 0.45), matBlack));
+        const spasPump = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.25, 12), matDarkSteel);
+        spasPump.rotation.x = Math.PI/2; spasPump.position.set(0, -0.04, -0.28); spas.add(spasPump);
+        const spasBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.5), matDarkSteel);
+        spasBarrel.rotation.x = Math.PI/2; spasBarrel.position.set(0, 0.02, -0.45); spas.add(spasBarrel);
+        const spasGrip = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.17, 0.08), matBlack);
+        spasGrip.position.set(0, -0.12, 0.18); spasGrip.rotation.x = -0.35; spas.add(spasGrip);
+        gunModels.push(spas);
+
+        // 5: CheyTac M200 Sniper (Long fluted barrel, bipod, carry handle, large scope)
+        const sniper = new THREE.Group();
+        sniper.add(new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.12, 0.6), matBlack));
+        const snpBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.028, 0.9), matDarkSteel);
+        snpBarrel.rotation.x = Math.PI/2; snpBarrel.position.set(0, 0.02, -0.72); sniper.add(snpBarrel);
+        const snpBrake = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 0.12), matDarkSteel);
+        snpBrake.position.set(0, 0.02, -1.2); sniper.add(snpBrake);
+        const snpScope = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.045, 0.4), matBlack);
+        snpScope.rotation.x = Math.PI/2; snpScope.position.set(0, 0.12, -0.05); sniper.add(snpScope);
+        const snpMag = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.22, 0.12), matDarkSteel);
+        snpMag.position.set(0, -0.15, 0.02); sniper.add(snpMag);
+        gunModels.push(sniper);
+
+        // 6: Rocket Launcher / Stinger (Military green tube, optics, rear cage)
+        const rlauncher = new THREE.Group();
+        const rTube = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 1.2, 16), matOlive);
+        rTube.rotation.x = Math.PI/2; rlauncher.add(rTube);
+        const rOptic = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.14, 0.24), matDarkSteel);
+        rOptic.position.set(0.1, 0.06, -0.1); rlauncher.add(rOptic);
+        const rCage = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 0.2), matDarkSteel);
+        rCage.position.set(0, 0, 0.55); rlauncher.add(rCage);
+        gunModels.push(rlauncher);
+
+        // Add all gun models to holder
+        gunModels.forEach(m => {
+            m.visible = false;
+            m.position.set(0.28, -0.24, -0.52);
+            gunContainer.add(m);
+        });
+
+        function updateEquippedGunVisual() {
+            gunModels.forEach((m, idx) => {
+                m.visible = (idx === WEAPONS.indexOf(WEAPONS[equippedSlots[activeSlot]]));
+            });
+            const wep = WEAPONS[equippedSlots[activeSlot]];
+            document.getElementById('weapon-name').innerText = wep.name;
+            document.getElementById('weapon-slot').innerText = activeSlot === 0 ? "Primary Weapon" : "Secondary Weapon";
+        }
+        updateEquippedGunVisual();
+
+        // --- 6. MOVEMENT & INPUT ENGINE ---
         const keys = {};
-        let velocity = new THREE.Vector3();
+        let playerVel = new THREE.Vector3();
         let canJump = false;
 
         window.addEventListener('keydown', (e) => {
             keys[e.code] = true;
-            // Switch guns with keys 1 to 7
-            if (e.key >= '1' && e.key <= '7') {
-                currentWepIdx = parseInt(e.key) - 1;
-                document.getElementById('weapon-name').innerText = WEAPONS[currentWepIdx].name;
-            }
+            if (e.key === '1') { activeSlot = 0; updateEquippedGunVisual(); }
+            if (e.key === '2') { activeSlot = 1; updateEquippedGunVisual(); }
         });
         window.addEventListener('keyup', (e) => { keys[e.code] = false; });
 
-        // --- 7. AIM DOWN SIGHTS (Right-Click) & SHOOTING ---
+        // --- 7. AIM DOWN SIGHTS (ADS) & RECOIL ---
         let isAiming = false;
         let lastShootTime = 0;
 
         window.addEventListener('mousedown', (e) => {
             if (e.button === 2) isAiming = true;
-            if (e.button === 0 && controls.isLocked) fireWeapon();
+            if (e.button === 0 && controls.isLocked) fireCurrentWeapon();
         });
         window.addEventListener('mouseup', (e) => {
             if (e.button === 2) isAiming = false;
         });
 
         const bullets = [];
-        function fireWeapon() {
-            const wep = WEAPONS[currentWepIdx];
+        const explosions = [];
+
+        function fireCurrentWeapon() {
+            const wep = WEAPONS[equippedSlots[activeSlot]];
             const now = performance.now();
             if (now - lastShootTime < wep.rate) return;
             lastShootTime = now;
 
-            playGunSound(1.0, wep.isSniper ? 0.6 : 0.25);
+            playGunSound(wep.sound);
 
-            // Gun kick animation
-            gunMesh.position.z += wep.recoil;
-            gunMesh.rotation.x += wep.recoil * 1.5;
+            // Gun Kick Recoil (Reduced significantly when ADS)
+            const currentGun = gunModels[equippedSlots[activeSlot]];
+            const recoilFactor = isAiming ? 0.35 : 1.0;
+            currentGun.position.z += wep.recoil * recoilFactor;
+            currentGun.rotation.x += wep.recoil * 1.6 * recoilFactor;
 
-            // Bullet trajectories
-            for (let p = 0; p < wep.pellets; p++) {
-                const spread = isAiming ? (wep.spread * 0.2) : wep.spread;
+            // Projectiles & Pellets
+            const pelletCount = wep.pellets || 1;
+            for (let i = 0; i < pelletCount; i++) {
+                // ADS spreads are up to 85% tighter
+                const spreadVal = isAiming ? (wep.spread * 0.15) : wep.spread;
                 const dir = new THREE.Vector3();
                 camera.getWorldDirection(dir);
-                dir.x += (Math.random() - 0.5) * spread;
-                dir.y += (Math.random() - 0.5) * spread;
+                dir.x += (Math.random() - 0.5) * spreadVal;
+                dir.y += (Math.random() - 0.5) * spreadVal;
 
-                const tracer = new THREE.Mesh(
-                    new THREE.SphereGeometry(wep.isRocket ? 0.12 : 0.04, 8, 8),
-                    new THREE.MeshBasicMaterial({ color: wep.isRocket ? 0xff4400 : 0xffea00 })
-                );
-                tracer.position.copy(camera.position);
-                scene.add(tracer);
+                // Visual Projectile
+                let projMesh;
+                if (wep.isRocket) {
+                    projMesh = new THREE.Mesh(
+                        new THREE.CylinderGeometry(0.04, 0.04, 0.4),
+                        new THREE.MeshBasicMaterial({ color: 0xff3300 })
+                    );
+                    projMesh.rotation.x = Math.PI / 2;
+                } else {
+                    projMesh = new THREE.Mesh(
+                        new THREE.SphereGeometry(0.045, 8, 8),
+                        new THREE.MeshBasicMaterial({ color: 0xffea00 })
+                    );
+                }
+                projMesh.position.copy(camera.position);
+                scene.add(projMesh);
 
                 bullets.push({
-                    mesh: tracer,
+                    mesh: projMesh,
                     velocity: dir.multiplyScalar(wep.speed),
                     spawned: now,
                     isRocket: wep.isRocket
@@ -302,22 +533,50 @@
             }
         }
 
-        // --- 8. MAIN ANIMATION & PHYSICS LOOP ---
+        // --- 8. EXPLOSION ENGINE (For Rocket Launcher) ---
+        function triggerRocketExplosion(position) {
+            playExplosionSound();
+
+            // Expanding Fireball Sphere
+            const expMesh = new THREE.Mesh(
+                new THREE.SphereGeometry(0.6, 16, 16),
+                new THREE.MeshBasicMaterial({ color: 0xff6600, wireframe: true })
+            );
+            expMesh.position.copy(position);
+            scene.add(expMesh);
+
+            explosions.push({
+                mesh: expMesh,
+                scale: 1,
+                spawned: performance.now()
+            });
+
+            // Area of effect damage check against targets within 8 meters
+            targets.forEach(tgt => {
+                const dist = tgt.position.distanceTo(position);
+                if (dist < 8.0) {
+                    showHitmarker(dist < 3.0);
+                    playHitSound(dist < 3.0);
+                }
+            });
+        }
+
+        // --- 9. MAIN GAME LOOP ---
         let prevTime = performance.now();
-        const gravity = -28.0;
+        const gravity = -30.0;
 
         function animate() {
             requestAnimationFrame(animate);
-            const time = performance.now();
-            const delta = Math.min((time - prevTime) / 1000, 0.1);
-            prevTime = time;
+            const now = performance.now();
+            const dt = Math.min((now - prevTime) / 1000, 0.1);
+            prevTime = now;
 
-            // Player Walking & Sprinting
+            // Player Walking & Jumping
             if (controls.isLocked) {
-                const speed = keys['ShiftLeft'] ? 16.0 : 9.0;
-                velocity.x -= velocity.x * 10.0 * delta;
-                velocity.z -= velocity.z * 10.0 * delta;
-                velocity.y += gravity * delta;
+                const moveSpeed = keys['ShiftLeft'] ? 17.0 : 10.0;
+                playerVel.x -= playerVel.x * 10.0 * dt;
+                playerVel.z -= playerVel.z * 10.0 * dt;
+                playerVel.y += gravity * dt;
 
                 const moveDir = new THREE.Vector3();
                 if (keys['KeyW']) moveDir.z += 1;
@@ -326,61 +585,71 @@
                 if (keys['KeyD']) moveDir.x += 1;
                 moveDir.normalize();
 
-                if (keys['KeyW'] || keys['KeyS']) velocity.z += moveDir.z * speed * 8.0 * delta;
-                if (keys['KeyA'] || keys['KeyD']) velocity.x += moveDir.x * speed * 8.0 * delta;
+                if (keys['KeyW'] || keys['KeyS']) playerVel.z += moveDir.z * moveSpeed * 8.0 * dt;
+                if (keys['KeyA'] || keys['KeyD']) playerVel.x += moveDir.x * moveSpeed * 8.0 * dt;
 
-                controls.moveRight(velocity.x * delta);
-                controls.moveForward(velocity.z * delta);
+                controls.moveRight(playerVel.x * dt);
+                controls.moveForward(playerVel.z * dt);
 
-                camera.position.y += velocity.y * delta;
+                camera.position.y += playerVel.y * dt;
                 if (camera.position.y < 1.6) {
-                    velocity.y = 0;
+                    playerVel.y = 0;
                     camera.position.y = 1.6;
                     canJump = true;
                 }
                 if (keys['Space'] && canJump) {
-                    velocity.y = 11.0;
+                    playerVel.y = 12.0;
                     canJump = false;
                 }
             }
 
-            // ADS Position & Scope Toggle
-            const wep = WEAPONS[currentWepIdx];
-            const targetFOV = isAiming ? wep.zoom : 75;
-            camera.fov = THREE.MathUtils.lerp(camera.fov, targetFOV, delta * 15);
+            // Weapon ADS & Scopes Alignment
+            const currentWep = WEAPONS[equippedSlots[activeSlot]];
+            const targetFOV = isAiming ? currentWep.zoom : 75;
+            camera.fov = THREE.MathUtils.lerp(camera.fov, targetFOV, dt * 16);
             camera.updateProjectionMatrix();
 
-            const scopeOverlay = document.getElementById('sniper-scope');
-            if (wep.isSniper && isAiming && camera.fov < 25) {
-                scopeOverlay.style.display = 'block';
-                gunMesh.visible = false;
-            } else {
-                scopeOverlay.style.display = 'none';
-                gunMesh.visible = true;
-            }
+            // Toggle custom scopes per gun
+            document.getElementById('scope-sniper').style.display = (currentWep.scope === 'sniper' && isAiming && camera.fov < 25) ? 'block' : 'none';
+            document.getElementById('scope-reddot').style.display = (currentWep.scope === 'reddot' && isAiming) ? 'block' : 'none';
+            document.getElementById('scope-ghostring').style.display = (currentWep.scope === 'ghostring' && isAiming) ? 'block' : 'none';
+            document.getElementById('scope-launcher').style.display = (currentWep.scope === 'launcher' && isAiming) ? 'block' : 'none';
 
-            // Gun recoil recovery
+            // Gun kick recovery & ADS positioning
+            const currentGun = gunModels[equippedSlots[activeSlot]];
             const restX = isAiming ? 0 : 0.28;
-            const restY = isAiming ? -0.16 : -0.25;
-            const restZ = -0.55;
-            gunMesh.position.x = THREE.MathUtils.lerp(gunMesh.position.x, restX, delta * 15);
-            gunMesh.position.y = THREE.MathUtils.lerp(gunMesh.position.y, restY, delta * 15);
-            gunMesh.position.z = THREE.MathUtils.lerp(gunMesh.position.z, restZ, delta * 10);
-            gunMesh.rotation.x = THREE.MathUtils.lerp(gunMesh.rotation.x, 0, delta * 12);
+            const restY = isAiming ? -0.15 : -0.24;
+            const restZ = -0.52;
+            currentGun.position.x = THREE.MathUtils.lerp(currentGun.position.x, restX, dt * 18);
+            currentGun.position.y = THREE.MathUtils.lerp(currentGun.position.y, restY, dt * 18);
+            currentGun.position.z = THREE.MathUtils.lerp(currentGun.position.z, restZ, dt * 12);
+            currentGun.rotation.x = THREE.MathUtils.lerp(currentGun.rotation.x, 0, dt * 14);
 
-            // Ballistic Bullets (Drop & Collision)
+            // Hide gun model when looking through the sniper black optic
+            currentGun.visible = !(currentWep.scope === 'sniper' && isAiming && camera.fov < 25);
+
+            // Ballistic Bullets & Missiles
             for (let i = bullets.length - 1; i >= 0; i--) {
                 const b = bullets[i];
-                b.velocity.y += (b.isRocket ? -5.0 : -12.0) * delta; // Bullet drop
-                const step = b.velocity.clone().multiplyScalar(delta);
+                b.velocity.y += (b.isRocket ? -4.0 : -14.0) * dt; // Gravity arc
+                const step = b.velocity.clone().multiplyScalar(dt);
 
+                // Raycast collision against targets and map obstacles
                 const ray = new THREE.Raycaster(b.mesh.position, b.velocity.clone().normalize(), 0, step.length());
-                const hits = ray.intersectObjects(targets);
+                const targetHits = ray.intersectObjects(targets);
+                const wallHits = ray.intersectObjects(obstacles);
 
-                if (hits.length > 0) {
-                    const isHead = hits[0].object.userData.isHead;
-                    playHitSound(isHead);
-                    showHitmarker(isHead);
+                if (targetHits.length > 0 || wallHits.length > 0) {
+                    const hitPos = (targetHits.length > 0) ? targetHits[0].point : wallHits[0].point;
+
+                    if (b.isRocket) {
+                        triggerRocketExplosion(hitPos);
+                    } else if (targetHits.length > 0) {
+                        const isCrit = targetHits[0].object.userData.isHead;
+                        playHitSound(isCrit);
+                        showHitmarker(isCrit);
+                    }
+
                     scene.remove(b.mesh);
                     bullets.splice(i, 1);
                     continue;
@@ -388,9 +657,23 @@
 
                 b.mesh.position.add(step);
 
-                if (time - b.spawned > 2500 || b.mesh.position.y <= 0) {
+                // Despawn or ground impact
+                if (now - b.spawned > 3000 || b.mesh.position.y <= 0) {
+                    if (b.isRocket) triggerRocketExplosion(b.mesh.position);
                     scene.remove(b.mesh);
                     bullets.splice(i, 1);
+                }
+            }
+
+            // Explosion Shockwave Animation
+            for (let i = explosions.length - 1; i >= 0; i--) {
+                const exp = explosions[i];
+                const age = (now - exp.spawned) / 1000;
+                exp.scale += dt * 25.0;
+                exp.mesh.scale.set(exp.scale, exp.scale, exp.scale);
+                if (age > 0.45) {
+                    scene.remove(exp.mesh);
+                    explosions.splice(i, 1);
                 }
             }
 
@@ -398,6 +681,7 @@
         }
         animate();
 
+        // --- 10. UI & LOADOUT CONTROLLERS ---
         function showHitmarker(isCrit) {
             const hm = document.getElementById('hitmarker');
             hm.style.display = 'block';
@@ -405,13 +689,27 @@
             if (isCrit) {
                 const crit = document.getElementById('critical-popup');
                 crit.style.display = 'block';
-                setTimeout(() => { crit.style.display = 'none'; }, 500);
+                setTimeout(() => { crit.style.display = 'none'; }, 550);
             }
         }
 
-        // Multiplayer Party Stubs
-        function createParty() { alert("Party created! Share code: " + Math.random().toString(36).substring(2, 7).toUpperCase()); }
-        function joinParty() { alert("Joined room!"); }
+        function openLoadout() {
+            controls.unlock();
+            document.getElementById('loadout-modal').style.display = 'block';
+        }
+
+        function applyLoadout() {
+            const p = parseInt(document.getElementById('primary-select').value);
+            const s = parseInt(document.getElementById('secondary-select').value);
+            equippedSlots = [p, s];
+            activeSlot = 0;
+            updateEquippedGunVisual();
+            document.getElementById('loadout-modal').style.display = 'none';
+            controls.lock();
+        }
+
+        function createParty() { alert("Party Lobby Created! Room Code: " + Math.random().toString(36).substring(2, 7).toUpperCase()); }
+        function joinParty() { alert("Joined Party!"); }
     </script>
 </body>
 </html>
